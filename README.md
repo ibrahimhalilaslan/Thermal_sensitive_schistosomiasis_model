@@ -10,6 +10,7 @@ Within this repository, three distinct folders—namely, 'previous_estimate_and_
    - **r_not_response_to_parameters:** Conducts sensitivity analysis of R_not.
    - **ther_sen_par_biom_mansoni:** Encompasses code and data for all thermal-sensitive parameters employed in the model.
    - **water_contact:** Features R code for the thermal response of schistosomiasis, accounting for water contact rate.
+   - **plot_africa_continent:** Features R code for the ploting africa continent.
 
 3. **S.haematobium:**
    This folder mirrors the structure of 'S.mansoni' but is tailored to the context of S. haematobium.
