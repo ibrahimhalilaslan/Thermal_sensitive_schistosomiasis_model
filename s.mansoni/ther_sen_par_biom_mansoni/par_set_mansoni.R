@@ -1,13 +1,14 @@
 # Model parameters are set in this script 
 
-# Clear the global environment 
-
-rm(list = ls(all = TRUE)) 
-
+# load packages
+library(boot)
+library(car)
 library(rTPC)
 library(nls.multstart)
 library(broom)
 library(tidyverse)
+library(patchwork)
+library(minpack.lm)
 
 #The factor of density-dependent fecundity rate
 # We adjust this value to get the abundance of sanil in a site same as C. Wood at al. 2019 paper
@@ -19,6 +20,8 @@ lambda <- 0.001724518
 
 
 #Constant human population having schistosomiasis 
+
+
 # We adjust this value to get the number of human in a site similar as C. Wood at al. 2019 paper also Susanne H. Sokolow, 2015 has similar value
 h <- 1000 #(human)
 
@@ -148,7 +151,7 @@ fit_mu_1 <- nls_multstart(rate~spain_1982(temp = temp, a,b,c,r0),
 
 fn_mu_1 <- function(x) augment(fit_mu_1, newdata = x)
 
-########## FECUNDITY RATE OF SNAILS FOR HIGHER TEMPERATURE ####################
+########## mortality RATE OF SNAILS FOR HIGHER TEMPERATURE ####################
 
 #P. H. Joubert, 1986, Biomphalaria pfeifferi 
 temp_joubert_86_p <- c(     34,         36,       38,       40)
@@ -345,13 +348,13 @@ rate <- c(rate_pfluger_81,  rate_pfluger_80, rate_foster_64, rate_gordon_34_pfei
 
 
 # fit model
-fit_sigma_s <- nls_multstart(rate~gaussian_1987(temp = temp, rmax, topt, a),
+fit_sigma_s <- nls_multstart(rate~lrf_1991(temp = temp, rmax, topt, tmin, tmax),
                              data = .x,
-                             iter = c(4,4,4),
-                             start_lower = get_start_vals(.x$temp, .x$rate, model_name = 'gaussian_1987') - 10,
-                             start_upper = get_start_vals(.x$temp, .x$rate, model_name = 'gaussian_1987') + 10,
-                             lower = get_lower_lims(.x$temp, .x$rate, model_name = 'gaussian_1987'),
-                             upper = get_upper_lims(.x$temp, .x$rate, model_name = 'gaussian_1987'),
+                             iter = c(3,3,3,3),
+                             start_lower = get_start_vals(.x$temp, .x$rate, model_name = 'lrf_1991') - 10,
+                             start_upper = get_start_vals(.x$temp, .x$rate, model_name = 'lrf_1991') + 10,
+                             lower = get_lower_lims(.x$temp, .x$rate, model_name = 'lrf_1991'),
+                             upper = get_upper_lims(.x$temp, .x$rate, model_name = 'lrf_1991'),
                              supp_errors = 'Y',
                              convergence_count = FALSE)
 

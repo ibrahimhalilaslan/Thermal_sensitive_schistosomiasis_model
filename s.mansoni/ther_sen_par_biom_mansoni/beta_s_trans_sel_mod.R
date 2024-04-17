@@ -98,7 +98,7 @@ legend("bottomleft", inset=c(0, 1.01), legend=c(expression(paste(italic('B. glab
                                              expression(paste(italic('B. pfeifferi with S. mansoni,'), "  Prah and James, 1977")), expression(paste(italic('B. glabrata with S. mansoni,'), "  Anderson et al., 1982")),
                                              expression(paste(italic('B. glabrata with S. mansoni,'), "  DeWitt, 1955")),expression(paste(italic('B. glabrata. with S. mansoni,'), "  Coelho and Bezerra, 2006")),
                                              expression(paste(italic('B. glabrata with S. mansoni,'), "  Upatham, 1973"))),  
-       pch = 19, col = c(2, 3, 4, 5, 6, 7), title="Data", cex = .8)
+       pch = 19, col = c(2, 3, 4, 5, 6, 7,8), title="Data", cex = .8)
 
 text(preds$temp[which.max(preds$.fitted)],    0.02,     labels = "^", cex = 1.5, col = 1)
 text(preds$temp[which.max(preds$.fitted)],    0.1,     labels = round(preds$temp[which.max(preds$.fitted)],3), cex = 1.5, col = 1)

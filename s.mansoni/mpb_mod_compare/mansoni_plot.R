@@ -28,35 +28,24 @@ out_puts <- matrix(0, nrow = 6, ncol = length(temperature))
 for (i in 1:length(temperature)){
   
   #Set a sequence for the temperature 
-  temp_data <- data.frame(temp = rep(temperature[i], length(sample_parameters)))
+  seasonal_temperature <- data.frame(temp = rep(temperature[i], length(sample_parameters)))
   
-  
-  # combine two piece wise function of mu_i
-  preds_1 <- fn_mu_i_1(temp_data)$.fitted[which(temp_data$temp <= 37)]
-  preds_2 <- fn_mu_i_2(temp_data)$.fitted[which(temp_data$temp > 37)]
-  
-  # This is mu_i function 
-  preds_mu_i <- c(preds_1, preds_2)  
-  
-  # combine two piece wise function of mu
-  preds_1 <- fn_mu_1(temp_data)$.fitted[which(temp_data$temp <= 37)]
-  preds_2 <- fn_mu_2(temp_data)$.fitted[which(temp_data$temp > 37)]
-  
-  # This is mu function 
-  preds_mu <- c(preds_1, preds_2) 
 
   
-  # Generate linearly interpolate point with temperature dependent parameter function 
-  nu_s_afun <- approxfun(x = sample_parameters, y = fn_nu_s(temp_data)$.fitted)
-  mu_m_afun <- approxfun(x = sample_parameters, y = fn_mu_m(temp_data)$.fitted)
-  mu_afun <- approxfun(x = sample_parameters, y = preds_mu)
-  sigma_s_afun <- approxfun(x = sample_parameters, y = fn_sigma_s(temp_data)$.fitted)
-  mu_i_afun <- approxfun(x = sample_parameters, y = preds_mu_i)       
-  nu_c_afun <- approxfun(x = sample_parameters, y = fn_nu_c(temp_data)$.fitted)
-  mu_c_afun <- approxfun(x = sample_parameters, y = fn_mu_c(temp_data)$.fitted)           
-  delta_e_afun <- approxfun(x = sample_parameters, y = fn_delta_e(temp_data)$.fitted)
-  beta_s_afun <- approxfun(x = sample_parameters, y = fn_beta_s(temp_data)$.fitted)
-  beta_h_afun <- approxfun(x = sample_parameters, y = fn_beta_h(temp_data)$.fitted)
+  # Generate linearly interpolate point with temperature dependent parameter function   
+  nu_s_afun <- approxfun(x = sample_parameters, y = fn_nu_s(seasonal_temperature)$.fitted)
+  mu_m_afun <- approxfun(x = sample_parameters, y = fn_mu_m(seasonal_temperature)$.fitted)
+  mu_afun <- approxfun(x = sample_parameters, y = ifelse(seasonal_temperature$temp <= 36, fn_mu_1(seasonal_temperature)$.fitted,
+                                                         fn_mu_2(seasonal_temperature)$.fitted))
+  sigma_s_afun <- approxfun(x = sample_parameters, y = fn_sigma_s(seasonal_temperature)$.fitted)
+  mu_i_afun <- approxfun(x = sample_parameters, y = ifelse(seasonal_temperature$temp <= 36, fn_mu_i_1(seasonal_temperature)$.fitted,
+                                                           fn_mu_i_2(seasonal_temperature)$.fitted))       
+  nu_c_afun <- approxfun(x = sample_parameters, y = fn_nu_c(seasonal_temperature)$.fitted)
+  mu_c_afun <- approxfun(x = sample_parameters, y = fn_mu_c(seasonal_temperature)$.fitted)           
+  delta_e_afun <- approxfun(x = sample_parameters, y = fn_delta_e(seasonal_temperature)$.fitted)
+  beta_s_afun <- approxfun(x = sample_parameters, y = ifelse(fn_beta_s(seasonal_temperature)$.fitted > 0,
+                                                             fn_beta_s(seasonal_temperature)$.fitted, 0))
+  beta_h_afun <- approxfun(x = sample_parameters, y = fn_beta_h(seasonal_temperature)$.fitted)
   
   
   #Call the library 
@@ -203,7 +192,7 @@ bins_maker <- function(percentile, lenth_of_bin){
 
 bins_data <-bins_maker(percentile = .98, lenth_of_bin = 400)
 d <- data.frame(bins_data[1,], bins_data[2,])
-colnames(d) <- c("temp", "prev")
+colnames(d) <- c("temp", "prev") 
 
 
 # plot bootstrapped CIs with data 

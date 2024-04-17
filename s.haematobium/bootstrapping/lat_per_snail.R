@@ -30,30 +30,30 @@ d <- data.frame(temp, rate)
 
 # fit model
 d_fit <- nest(d, data = c(temp, rate)) %>%
-  mutate(gaussian_1987 = map(data, ~nls_multstart(rate~gaussian_1987(temp = temp, rmax, topt, a),
-                                                      data = .x,
-                                                      iter = c(4,4,4),
-                                                      start_lower = get_start_vals(.x$temp, .x$rate, model_name = 'gaussian_1987') - 10,
-                                                      start_upper = get_start_vals(.x$temp, .x$rate, model_name = 'gaussian_1987') + 10,
-                                                      lower = get_lower_lims(.x$temp, .x$rate, model_name = 'gaussian_1987'),
-                                                      upper = get_upper_lims(.x$temp, .x$rate, model_name = 'gaussian_1987'),
-                                                      supp_errors = 'Y',
-                                                      convergence_count = FALSE)),
+  mutate(lrf_1991 = map(data, ~nls_multstart(rate~lrf_1991(temp = temp, rmax, topt, tmin, tmax),
+                                                  data = .x,
+                                                  iter = c(3,3,3,3),
+                                                  start_lower = get_start_vals(.x$temp, .x$rate, model_name = 'lrf_1991') - 10,
+                                                  start_upper = get_start_vals(.x$temp, .x$rate, model_name = 'lrf_1991') + 10,
+                                                  lower = get_lower_lims(.x$temp, .x$rate, model_name = 'lrf_1991'),
+                                                  upper = get_upper_lims(.x$temp, .x$rate, model_name = 'lrf_1991'),
+                                                  supp_errors = 'Y',
+                                                  convergence_count = FALSE)),
          # create new temperature data
          new_data = map(data, ~tibble(temp = seq(min(.x$temp), max(.x$temp), length.out = 100))),
          # predict over that data,
-         preds =  map2(gaussian_1987, new_data, ~augment(.x, newdata = .y)))
+         preds =  map2(lrf_1991, new_data, ~augment(.x, newdata = .y)))
 
 # unnest predictions
 d_preds <- select(d_fit, preds) %>%
   unnest(preds)
 
 # refit model using nlsLM
-fit_nlsLM <- minpack.lm::nlsLM(rate~gaussian_1987(temp = temp, rmax, topt, a),
+fit_nlsLM <- minpack.lm::nlsLM(rate~lrf_1991(temp = temp, rmax, topt, tmin, tmax),
                                data = d,
-                               start = coef(d_fit$gaussian_1987[[1]]),
-                               lower = get_lower_lims(d$temp, d$rate, model_name = 'gaussian_1987'),
-                               upper = get_upper_lims(d$temp, d$rate, model_name = 'gaussian_1987'),
+                               start = coef(d_fit$lrf_1991[[1]]),
+                               lower = get_lower_lims(d$temp, d$rate, model_name = 'lrf_1991'),
+                               upper = get_upper_lims(d$temp, d$rate, model_name = 'lrf_1991'),
                                weights = rep(1, times = nrow(d)))
 
 # bootstrap using case resampling
@@ -71,7 +71,7 @@ boot1_preds <- boot1$t %>%
   group_by_all() %>%
   do(data.frame(temp = seq(min(d$temp), max(d$temp), length.out = 100))) %>%
   ungroup() %>%
-  mutate(pred = gaussian_1987(temp = temp, rmax, topt, a))
+  mutate(pred = lrf_1991(temp = temp, rmax, topt, tmin, tmax))
 
 # calculate bootstrapped confidence intervals
 boot1_conf_preds <- group_by(boot1_preds, temp) %>%

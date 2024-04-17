@@ -25,13 +25,13 @@ rate <- c(rate_pfluger_84, rate_gordon_34_glo)
 
 # fit model
 
-fit <- nls_multstart(rate~gaussian_1987(temp = temp, rmax, topt, a),
+fit <- nls_multstart(rate~lrf_1991(temp = temp, rmax, topt, tmin, tmax),
                      data = .x,
-                     iter = c(4,4,4),
-                     start_lower = get_start_vals(.x$temp, .x$rate, model_name = 'gaussian_1987') - 10,
-                     start_upper = get_start_vals(.x$temp, .x$rate, model_name = 'gaussian_1987') + 10,
-                     lower = get_lower_lims(.x$temp, .x$rate, model_name = 'gaussian_1987'),
-                     upper = get_upper_lims(.x$temp, .x$rate, model_name = 'gaussian_1987'),
+                     iter = c(3,3,3,3),
+                     start_lower = get_start_vals(.x$temp, .x$rate, model_name = 'lrf_1991') - 10,
+                     start_upper = get_start_vals(.x$temp, .x$rate, model_name = 'lrf_1991') + 10,
+                     lower = get_lower_lims(.x$temp, .x$rate, model_name = 'lrf_1991'),
+                     upper = get_upper_lims(.x$temp, .x$rate, model_name = 'lrf_1991'),
                      supp_errors = 'Y',
                      convergence_count = FALSE)
 
@@ -75,7 +75,7 @@ dev.off()
 
 pdf(file = "paper_lat_per_snail.pdf", width = 5, height = 5)
 par(mar=c(6, 6, 4, 1), xpd = TRUE)
-plot(preds$temp, 1/preds$.fitted, col = 1, las = 1,  pch = 21, lwd = 3, ylab = "",  xlab = "", cex.lab = 1.3, type = "l",  cex.axis=1.3,
+plot(preds$temp, 1/preds$.fitted, col = 1, las = 1,  pch = 21, lwd = 3, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,
      xlim = c(min(c(preds$temp, .x$temp)), max(c(preds$temp, .x$temp))), ylim = c(min(c(1/preds$.fitted, 1/.x$rate)), max(c(1/preds$.fitted, 1/.x$rate))))
 
 points(temp_pfluger_84, 1/rate_pfluger_84, col = 2, pch = 19)

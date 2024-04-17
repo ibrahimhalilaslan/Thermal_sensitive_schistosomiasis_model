@@ -287,7 +287,7 @@ fit_delta_e <- nls_multstart(rate~flinn_1991(temp = temp, a, b, c),
                              supp_errors = 'Y')
 fn_delta_e <- function(x) augment(fit_delta_e, newdata = x)
 
-# PREPATENT PERIOD IN SNAILS 
+############ PREPATENT PERIOD IN SNAILS #############
 
 #W. Pflüger 1984, Bulinus truncatus with S. haematobium 
 temp_pfluger_84 <- c(18,       19,     20,    21,    22,     23,    25,  28,   30,    31,  32)
@@ -307,13 +307,13 @@ rate <- c(rate_pfluger_84, rate_gordon_34_glo)
 .x <- data.frame(temp, rate)
 
 # fit model
-fit_sigma_s <- nls_multstart(rate~gaussian_1987(temp = temp, rmax, topt, a),
+fit_sigma_s <- nls_multstart(rate~lrf_1991(temp = temp, rmax, topt, tmin, tmax),
                              data = .x,
-                             iter = c(4,4,4),
-                             start_lower = get_start_vals(.x$temp, .x$rate, model_name = 'gaussian_1987') - 10,
-                             start_upper = get_start_vals(.x$temp, .x$rate, model_name = 'gaussian_1987') + 10,
-                             lower = get_lower_lims(.x$temp, .x$rate, model_name = 'gaussian_1987'),
-                             upper = get_upper_lims(.x$temp, .x$rate, model_name = 'gaussian_1987'),
+                             iter = c(3,3,3,3),
+                             start_lower = get_start_vals(.x$temp, .x$rate, model_name = 'lrf_1991') - 10,
+                             start_upper = get_start_vals(.x$temp, .x$rate, model_name = 'lrf_1991') + 10,
+                             lower = get_lower_lims(.x$temp, .x$rate, model_name = 'lrf_1991'),
+                             upper = get_upper_lims(.x$temp, .x$rate, model_name = 'lrf_1991'),
                              supp_errors = 'Y',
                              convergence_count = FALSE)
 

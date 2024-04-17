@@ -61,7 +61,7 @@ rate_joubert_86_p <- c(0.1457006, 0.6661235, 1.649401,  5.821733)
 
 #El- Hassan 1974, Biomphalaria Alexandrina
 temp_has_74_a_h <- c(35,    37)
-rate_has_74_a_h <- 1/c(0.03891, 0.3)
+rate_has_74_a_h <- c(0.03891, 0.3)
 
 
 # Data 
@@ -115,10 +115,37 @@ preds <- c(preds_1, preds_2)
 temperature <- seq(min(.x_1$temp), max(.x_2$temp), 0.2)
 
 
+#####################
+pdf(file = "log_mortality_rate_inf_snail.pdf", width = 5, height = 5)
+par(mar=c(6, 8, 4, 1), xpd = TRUE)
+plot(temperature, log(preds), col = 1,  pch = 21, lwd = 3, ylab = "",  xlab = "", cex.lab = 1.3, type = "l", cex.axis=1.3,
+     xlim = c(min(temperature), max(temperature)), ylim = c(-8.5, 4))
+
+#text(temperature[which.min(preds)],   -8.5,     labels = "^", cex = 1.5, col = 1)
+#text(temperature[which.min(preds)],    -7.5,     labels = round(temperature[which.min(preds)],1), cex = 1.5, col = 1)
+
+
+points(temp_pfluger_81, log(rate_pfluger_81), col = 2, pch = 19)
+points(temp_pfluger_81_sin, log(rate_pfluger_81_sin), col = 3, pch = 19)
+points(temp_pfluger_80, log(rate_pfluger_80), col = 4, pch = 19)
+points(temp_foster_64, log(rate_foster_64), col = 5, pch = 19)
+points(temp_upatham_73, log(rate_upatham_73), col = 6, pch = 19)
+points(temp_has_74_a_h, log(rate_has_74_a_h), col = 7, pch = 19)
+points(temp_joubert_86_p, log(rate_joubert_86_p), col = 8, pch = 19)
+
+
+mtext(text = expression(paste("Temperature (",degree,"C)")), side = 1, line = 4, cex = 2, at = 25)
+mtext(text = expression(log(mu[i])), side = 2, line = 3, cex = 2, las = 1)
+mtext(text = expression(paste(italic('Biomphalaria'), " spp.")), side = 3, line = 2, cex = 2, at = 25)
+
+dev.off()
+
+##############################
+
 
 library(TeachingDemos)
-pdf(file = "mortality_rate_inf_snail.pdf", width = 5, height = 5)
-par(mar=c(4, 4, 6, 1), xpd = TRUE)
+#pdf(file = "mortality_rate_inf_snail.pdf", width = 5, height = 5)
+par(mar=c(4, 4, 8, 1), xpd = TRUE)
 plot(temperature, preds, col = 1,  pch = 21, lwd = 3, ylab = "",  xlab = "", cex.lab = 1.3, type = "l", cex.axis=1.3,
      xlim = c(min(temperature), max(temperature)), ylim = c(-1.2, max(preds)+1))
 
@@ -131,13 +158,17 @@ points(temp_pfluger_81_sin, rate_pfluger_81_sin, col = 3, pch = 19)
 points(temp_pfluger_80, rate_pfluger_80, col = 4, pch = 19)
 points(temp_foster_64, rate_foster_64, col = 5, pch = 19)
 points(temp_upatham_73, rate_upatham_73, col = 6, pch = 19)
+points(temp_has_74_a_h, rate_has_74_a_h, col = 7, pch = 19)
+points(temp_joubert_86_p, rate_joubert_86_p, col = 8, pch = 19)
 
 
 
 legend("bottomleft", inset=c(0, 1.01), legend=c(expression(paste(italic('B. glabrata with S. mansoni,'), "  W. Pflüger, 1981")),  expression(paste(italic('B. glabrata with S. mansoni,'), "  W. Pflüger, 1981")),
                                              expression(paste(italic('B. glabrata with S. mansoni,'), "  W. Pflüger, 1980")), expression(paste(italic('B. pfeifferi with S. mansoni,'), "  R. Foster, 1964")),
-                                             expression(paste(italic('B. glabrata with S. mansoni,'), "  Upatham, 1973"))), 
-       pch = 19, col = c(2, 3, 4, 5, 6), title="Data",  cex = .8)
+                                             expression(paste(italic('B. glabrata with S. mansoni,'), "  Upatham, 1973")),
+                                             expression(paste(italic('B. alexandrina'), " El- Hassan 1974")),
+                                             expression(paste(italic('B. pfeifferi'), "  P. H. Joubert, 1986"))),
+       pch = 19, col = c(2, 3, 4, 5, 6, 7, 8), title="Data",  cex = .8)
 
 v <- c(which(temperature == 16):which(temperature == 32))
 subplot(
@@ -189,12 +220,12 @@ mtext(text = expression(paste("Temperature (",degree,"C)")), side = 1, line = 2.
 mtext(text = "Mortality rate of infected snails per day", side = 2, line = 2.5, cex = 1.5)
 #main = "Death rate of snail per day", cex.main=1.7
 
-dev.off()
+#dev.off()
 
 
 
 
-pdf(file = "paper_mortality_rate_inf_snail.pdf", width = 5, height = 5)
+#pdf(file = "paper_mortality_rate_inf_snail.pdf", width = 5, height = 5)
 par(mar=c(6, 5, 4, 1), xpd = TRUE)
 
 plot(temperature, preds, col = 1,  pch = 21, lwd = 3, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,
@@ -205,7 +236,8 @@ points(temp_pfluger_81_sin, rate_pfluger_81_sin, col = 3, pch = 19)
 points(temp_pfluger_80, rate_pfluger_80, col = 4, pch = 19)
 points(temp_foster_64, rate_foster_64, col = 5, pch = 19)
 points(temp_upatham_73, rate_upatham_73, col = 6, pch = 19)
-
+points(temp_has_74_a_h, rate_has_74_a_h, col = 7, pch = 19)
+points(temp_joubert_86_p, rate_joubert_86_p, col = 8, pch = 19)
 
 v <- c(which(temperature == 16):which(temperature == 32))
 subplot(
@@ -256,4 +288,4 @@ mtext(text = expression(paste("Temperature (",degree,"C)")), side = 1, line = 4,
 mtext(text = expression(mu[i]), side = 2, line = 3, cex = 2.5, las = 1)
 mtext(text = expression(paste(italic('Biomphalaria'), " spp.")), side = 3, line = 2, cex = 2, at = 30)
 
-dev.off()
+#dev.off()

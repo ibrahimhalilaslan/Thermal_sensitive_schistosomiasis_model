@@ -35,13 +35,13 @@ rate <- c(rate_pfluger_81,  rate_pfluger_80, rate_foster_64, rate_gordon_34_pfei
 .x <- data.frame(temp, rate)
 # fit model
 
-fit <- nls_multstart(rate~gaussian_1987(temp = temp, rmax, topt, a),
+fit <- nls_multstart(rate~lrf_1991(temp = temp, rmax, topt, tmin, tmax),
                      data = .x,
-                     iter = c(4,4,4),
-                     start_lower = get_start_vals(.x$temp, .x$rate, model_name = 'gaussian_1987') - 10,
-                     start_upper = get_start_vals(.x$temp, .x$rate, model_name = 'gaussian_1987') + 10,
-                     lower = get_lower_lims(.x$temp, .x$rate, model_name = 'gaussian_1987'),
-                     upper = get_upper_lims(.x$temp, .x$rate, model_name = 'gaussian_1987'),
+                     iter = c(3,3,3,3),
+                     start_lower = get_start_vals(.x$temp, .x$rate, model_name = 'lrf_1991') - 10,
+                     start_upper = get_start_vals(.x$temp, .x$rate, model_name = 'lrf_1991') + 10,
+                     lower = get_lower_lims(.x$temp, .x$rate, model_name = 'lrf_1991'),
+                     upper = get_upper_lims(.x$temp, .x$rate, model_name = 'lrf_1991'),
                      supp_errors = 'Y',
                      convergence_count = FALSE)
 

@@ -121,11 +121,44 @@ new_data_2 <- data.frame(temp = seq(min(.x_2$temp)-5, max(.x_2$temp), 0.2))
 preds_2 <- augment(fit_2, newdata = new_data_2)
 
 
-preds_1 <- preds_1$.fitted[which(preds_1$temp <= 33.5)]
-preds_2 <- preds_2$.fitted[which(preds_2$temp > 33.5)]
+preds_1 <- preds_1$.fitted[which(preds_1$temp <= 33)]
+preds_2 <- preds_2$.fitted[which(preds_2$temp > 33)]
 
 preds <- c(preds_1, preds_2)  
 temperature <- seq(min(.x_1$temp), max(.x_2$temp), 0.2)
+
+
+
+######################
+
+#####################
+pdf(file = "log_mortality_rate_snail.pdf", width = 5, height = 5)
+par(mar=c(6, 8, 4, 1), xpd = TRUE)
+plot(temperature, log(preds), col = 1,  pch = 21, lwd = 3, ylab = "",  xlab = "", cex.lab = 1.3, type = "l", cex.axis=1.3,
+     xlim = c(min(temperature), max(temperature)), ylim = c(-8.5, 4))
+
+text(temperature[which.min(preds)],   -8.5,     labels = "^", cex = 1.5, col = 1)
+text(temperature[which.min(preds)],    -7.5,     labels = round(temperature[which.min(preds)],3), cex = 1.5, col = 1)
+
+points(c(temp_ches_17, temp_ches_17_2), log(c(rate_ches_17,rate_ches_17_2)), col = 2, pch = 19)
+points(c(temp_has_74_t, temp_has_74_t_2), log(c(rate_has_74_t, rate_has_74_t_2)), col = 3, pch = 19)
+points(temp_joubert_86_a, log(rate_joubert_86_a), col = 4, pch = 19)
+points(temp_joubert_86_g, log(rate_joubert_86_g), col = 5, pch = 19)
+points(temp_eleman_82, log(rate_eleman_82), col = 6, pch = 19)
+points(temp_shiff_64, log(rate_shiff_64), col = 7, pch = 19)
+points(temp_kubirizajournal_10, log(rate_kubirizajournal_10), col = 8, pch = 19)
+
+
+
+mtext(text = expression(paste("Temperature (",degree,"C)")), side = 1, line = 4, cex = 2, at = 25)
+mtext(text = expression(log(mu)), side = 2, line = 3, cex = 2, las = 1)
+mtext(text = expression(paste(italic('Bulinus'), " spp.")), side = 3, line = 2, cex = 2, at = 25)
+
+dev.off()
+#######################
+
+
+
 
 
 
