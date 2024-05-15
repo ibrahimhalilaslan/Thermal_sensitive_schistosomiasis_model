@@ -1025,7 +1025,7 @@ bins_maker <- function(percentile, lenth_of_bin){
   return(out_put)
 }
 
-bins_data <-bins_maker(percentile = .98, lenth_of_bin = 300)
+bins_data <-bins_maker(percentile = .98, lenth_of_bin = 400)
 d <- data.frame(bins_data[1,], bins_data[2,])
 colnames(d) <- c("temp", "prev")
 
@@ -1113,7 +1113,7 @@ ggplot(data = df, aes(x = x)) +
   scale_colour_manual("", 
                       breaks = c("Prev. Est.", "New Est."),
                       values = c("grey", "red")) +
-  geom_point(aes(temp, prev/max(prev)), d, size = 1, alpha = 0.5, colour = "red") + 
+  geom_point(aes(temp, prev/max(prev)), d, size = 2, alpha = 0.5, colour = "red") + 
   geom_ribbon(aes(temp, ymin = conf_lower/max(r_not_best), ymax = conf_upper/max(r_not_best)), boot_conf_preds, fill = 'red', alpha = 0.1) +  
   labs(title = "S.mansoni", x = '',y = expression("R"[0]/max(("R"[0]))))+
   theme(legend.position="bottom", legend.key = element_rect(fill = "white"), panel.background = element_rect(fill = "white", colour = "black"), text = element_text(size = 17),
