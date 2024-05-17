@@ -86,25 +86,25 @@ rast <- rast[africa_poly]
 
 
 
-
-
 # Plot the map with intensity of color based on value
 pdf(file = "s_mansoni_africa_r_not.pdf", width = 8, height = 8)
 ggplot() +
   geom_stars(aes(fill = R_not), data = rast) + 
-  scale_fill_gradient(low = "white", high = "red", na.value = "white") +
+  scale_fill_gradientn(colors = c("white", "yellow", "red"), na.value = "white") +
   
   geom_map(data = africa_map, map = africa_map,
            aes(map_id = region),
            fill = NA, color = "black", size = 0.5) + 
-  labs(title = expression(paste(italic(S.mansoni) )), 
+  labs(title = expression(paste(italic(S.mansoni))), 
        fill = expression(paste(R[0]))) +  # Add title and color legend title
   theme_void() +
   coord_sf() +
-  theme(  # Adjust plot margins
-   plot.title =  element_text(hjust = 0.5, face = "bold", size = 27), 
-        legend.position = c(0.3, 0.2)) # Center plot title 
+  theme(
+    plot.title =  element_text(hjust = 0.5, face = "bold", size = 27), 
+    legend.position = c(0.3, 0.2)  # Center plot title 
+  )
 dev.off()
+
 
 
 rast$Rate_of_increase[mask_rast$grid_code == 1] <- NA
