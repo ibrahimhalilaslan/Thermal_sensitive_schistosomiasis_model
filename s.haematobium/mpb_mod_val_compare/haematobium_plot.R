@@ -229,18 +229,33 @@ dev.off()
 d_shade <- data.frame(sch_heamatobium$bio01, sch_heamatobium$percent_pos*max(percent_positive_best_mpb$percent_positive)/max(sch_heamatobium$percent_pos))
 colnames(d_shade) <- c("shade_temp", "shade_prev")
 
+# Create a new column in your data frame d for transformed values (example transformation)
+d$transformed_prev <- d$prev*max(percent_positive_best_mpb$percent_positive)/max(d$prev)  # Replace with your desired transformation
+
+
 # plot bootstrapped CIs with data
 pdf(file = "conf_haematobium_boot_mpb_shade.pdf", width = 5, height = 5)
 ggplot() +
   geom_line(aes(temperature,  100*percent_positive), percent_positive_best_mpb, col = 'blue', size = 1) +
   geom_ribbon(aes(temperature, ymin = 100*percent_positive_lower_bound, ymax = 100*percent_positive_upper_bound), percent_positive_boot_conf_preds, fill = 'blue', alpha = 0.1) +
-  geom_point(aes(temp, 100*prev*max(percent_positive_best_mpb$percent_positive)/max(prev)), d, size = 2, alpha = 0.5, colour = "blue") + 
   geom_point(aes(shade_temp, 100*shade_prev*max(percent_positive_best_mpb$percent_positive)/max(shade_prev)), d_shade, size = .1, alpha = 0.1, col = "blue")+
+  geom_point(aes(temp, 100*transformed_prev), d, size = 2, alpha = 0.5, colour = "blue") + 
+  scale_y_continuous(name = "", 
+                     sec.axis = sec_axis(~ . / max(100 * d$transformed_prev) * max(d$prev),  name = "Percentage of positive case (GNTD)")) +
   
-  labs(title = "S.haematobium", x = 'Temperature (ºC)', y = "")+
-  theme(legend.position="bottom", legend.key = element_rect(fill = "white"), panel.background = element_rect(fill = "white", colour = "black"), text = element_text(size = 17),
-        axis.text.x = element_text(color="black", size=17), axis.text.y = element_text(color="black", size=17),  panel.border = element_rect(colour = "black", fill=NA, size=1), 
-        plot.title = element_text(size=14, face="bold.italic", hjust=0.5))+ 
+  labs(title = "", x = 'Temperature (ºC)')+  
+  theme(legend.position = "bottom", 
+        legend.key = element_rect(fill = "white"), 
+        panel.background = element_rect(fill = "white", colour = "black"), 
+        text = element_text(size = 17, colour = "black"),
+        axis.text.x = element_text(colour = "black", size = 17), 
+        axis.text.y = element_text(colour = "black", size = 17),
+        #axis.text.y.left = element_blank(),  # Hide y-axis text
+        axis.title.y = element_text(colour = "black", size = 17),  # Keep y-axis title
+        axis.title.y.right = element_text(angle = 90, colour = "black", size = 17, vjust = 0.5),  # Adjust right y-axis title
+        panel.border = element_rect(colour = "black", fill = NA, size = 1), 
+        plot.title = element_text(size=14, face="bold.italic", hjust=0.5)) +
+  
   # Add mark segment
   annotate("text", x = percent_positive_best_mpb$temperature[which.max(percent_positive_best_mpb$percent_positive)], y = 1, label = '^', colour = "blue", size = 6) + 
   annotate("text", x = percent_positive_best_mpb$temperature[which.max(percent_positive_best_mpb$percent_positive)], y = 5,  label = round(percent_positive_best_mpb$temperature[which.max(percent_positive_best_mpb$percent_positive)],1), colour = "blue", size = 5) +

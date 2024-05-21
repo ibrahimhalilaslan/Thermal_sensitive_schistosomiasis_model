@@ -1106,30 +1106,39 @@ fn_nguyen <- function(x) augment(nguyen, newdata = x)
 df <- data.frame(x = r_not_data$temp, y2 = r_not_data$r_not_best, y1 = fn_nguyen(temperature)$.fitted)
 # plot bootstrapped CIs
 
+# Create a new column in your data frame d for transformed values (example transformation)
+d$transformed_prev <- d$prev / max(d$prev)  # Replace with your desired transformation
+
+
 pdf(file = "mansoni_compare_boost_r_not.pdf", width = 5, height = 5)
 ggplot(data = df, aes(x = x)) +
-  geom_line(aes(y = y1/max(y1), colour = "Prev. Est."),size=1) +
-  geom_line(aes(y = y2/max(y2), colour = "New Est."), size=1) +
+  geom_line(aes(y = y1 / max(y1), colour = "Prev. Est."), size = 1) +
+  geom_line(aes(y = y2 / max(y2), colour = "New Est."), size = 1) +
   scale_colour_manual("", 
                       breaks = c("Prev. Est.", "New Est."),
                       values = c("grey", "red")) +
-  geom_point(aes(temp, prev/max(prev)), d, size = 2, alpha = 0.5, colour = "red") + 
-  geom_ribbon(aes(temp, ymin = conf_lower/max(r_not_best), ymax = conf_upper/max(r_not_best)), boot_conf_preds, fill = 'red', alpha = 0.1) +  
-  labs(title = "S.mansoni", x = '',y = expression("R"[0]/max(("R"[0]))))+
-  theme(legend.position="bottom", legend.key = element_rect(fill = "white"), panel.background = element_rect(fill = "white", colour = "black"), text = element_text(size = 17),
-        axis.text.x = element_text(color="black", size=17), axis.text.y = element_text(color="black", size=17),  panel.border = element_rect(colour = "black", fill=NA, size=1), 
-        plot.title = element_text(size=14, face="bold.italic", hjust=0.5)) +
- # Temperature (ºC)
-  # Add mark segment
- annotate("text", x = temperature$temp[which.max(df$y1)], y = 0, label = '^', colour = "grey", size = 5) + 
-  annotate("text", x = temperature$temp[which.max(df$y1)], y = 0.08,  label = round(df$x[which.max(df$y1)],1), colour = "grey", size = 5) +
+  geom_point(aes(temp, transformed_prev), d, size = 2, alpha = 0.5, colour = "red") + 
+  geom_ribbon(aes(temp, ymin = conf_lower / max(r_not_best), ymax = conf_upper / max(r_not_best)), boot_conf_preds, fill = 'blue', alpha = 0.1) +  
+  scale_y_continuous(name = expression("Potential for transmission (" ~ R[0] ~ "lines)"), 
+                     sec.axis = sec_axis(~ .* max(d$prev),  name = "")) +
+  labs(title = "S.mansoni", x = '') +
+  theme(legend.position = "bottom", 
+        legend.key = element_rect(fill = "white"), 
+        panel.background = element_rect(fill = "white", colour = "black"), 
+        text = element_text(size = 17),
+        axis.text.x = element_text(color = "black", size = 17), 
+        axis.text.y = element_blank(),  # Hide left y-axis numerical values
+        axis.title.y.right  = element_blank(),
+        axis.text.y.right = element_text(color = "black", size = 17),  # Keep secondary y-axis text
+        panel.border = element_rect(colour = "black", fill = NA, size = 1), 
+        plot.title = element_text(size = 14, face = "bold.italic", hjust = 0.5)) +
+  annotate("text", x = temperature$temp[which.max(df$y1)], y = 0, label = '^', colour = "grey", size = 5) + 
+  annotate("text", x = temperature$temp[which.max(df$y1)], y = 0.08, label = round(df$x[which.max(df$y1)], 1), colour = "grey", size = 5) +
   annotate("text", x = temperature$temp[which.max(df$y2)], y = 0, label = '^', colour = "red", size = 5) +
-  annotate("text", x = temperature$temp[which.max(df$y2)], y = 0.08, label = round(df$x[which.max(df$y2)],1), colour = "red", size = 5) +
-  # Add horizontal line segment
+  annotate("text", x = temperature$temp[which.max(df$y2)], y = 0.08, label = round(df$x[which.max(df$y2)], 1), colour = "red", size = 5) +
   geom_segment(aes(x = lower_bound, y = -0.02, xend = upper_bound, yend = -0.02), colour = "red", size = 1)
 
-dev.off() 
-
+dev.off()
 
 
 ##################

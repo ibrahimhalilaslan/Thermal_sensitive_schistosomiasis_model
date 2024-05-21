@@ -1005,6 +1005,10 @@ fn_nguyen <- function(x) augment(nguyen, newdata = x)
 
 df <- data.frame(x = r_not_data$temp, y2 = r_not_data$r_not_best, y1 = fn_nguyen(temperature)$.fitted)
 
+# Create a new column in your data frame d for transformed values (example transformation)
+d$transformed_prev <- d$prev / max(d$prev)  # Replace with your desired transformation
+
+
 #expression("R"[0]/max(("R"[0])))
 
 # plot bootstrapped CIs
@@ -1015,11 +1019,21 @@ ggplot(data = df, aes(x = x)) +
   scale_colour_manual("", 
                       breaks = c("Prev. Est.", "New Est."),
                       values = c("grey", "blue")) +
-  geom_point(aes(temp, prev/max(prev)), d, size = 2, alpha = 0.5, colour = "blue") + 
+  geom_point(aes(temp, transformed_prev), d, size = 2, alpha = 0.5, colour = "blue") + 
   geom_ribbon(aes(temp, ymin = conf_lower/max(r_not_best), ymax = conf_upper/max(r_not_best)), boot_conf_preds, fill = 'blue', alpha = 0.1) +  
-  labs(title = "S.haematobium", x = '',y = "")+  
-  theme(legend.position="bottom", legend.key = element_rect(fill = "white"), panel.background = element_rect(fill = "white", colour = "black"), text = element_text(size = 17),
-        axis.text.x = element_text(color="black", size=17), axis.text.y = element_text(color="black", size=17),  panel.border = element_rect(colour = "black", fill=NA, size=1), 
+  scale_y_continuous(name = "", 
+                     sec.axis = sec_axis(~ .* max(d$prev),  name = "Percentage of positive case (GNTD)")) +
+  labs(title = "S.haematobium", x = '')+  
+  theme(legend.position = "bottom", 
+        legend.key = element_rect(fill = "white"), 
+        panel.background = element_rect(fill = "white", colour = "black"), 
+        text = element_text(size = 17),
+        axis.text.x = element_text(color = "black", size = 17), 
+        axis.text.y = element_text(colour = "black", size = 17),
+        axis.text.y.left = element_blank(),  # Hide y-axis text
+        axis.title.y = element_text(color = "black", size = 17),  # Keep y-axis title
+        axis.title.y.right = element_text(angle = 90, color = "black", size = 17, vjust = 0.5),  # Adjust right y-axis title
+        panel.border = element_rect(colour = "black", fill = NA, size = 1), 
         plot.title = element_text(size=14, face="bold.italic", hjust=0.5)) +
   #Temperature (ºC)
   # Add mark segment

@@ -216,18 +216,31 @@ dev.off()
 d_shade <- data.frame(sch_mansoni$bio01, sch_mansoni$percent_pos*max(percent_positive_best_mpb$percent_positive)/max(sch_mansoni$percent_pos))
 colnames(d_shade) <- c("shade_temp", "shade_prev")
 
+
+# Create a new column in your data frame d for transformed values (example transformation)
+d$transformed_prev <- d$prev*max(percent_positive_best_mpb$percent_positive)/max(d$prev)  # Replace with your desired transformation
+
 pdf(file = "conf_mansoni_boot_mpb_shade.pdf", width = 5, height = 5)
 ggplot() +
   geom_line(aes(temperature,  100*percent_positive), percent_positive_best_mpb, col = 'red', size = 1) +
   geom_ribbon(aes(temperature, ymin = 100*percent_positive_lower_bound, ymax = 100*percent_positive_upper_bound), percent_positive_boot_conf_preds, fill = 'red', alpha = 0.1) +
-  geom_point(aes(temp, 100*prev*max(percent_positive_best_mpb$percent_positive)/max(prev)), d, size = 2, alpha = 0.5, colour = "red") + 
   geom_point(aes(shade_temp, 100*shade_prev*max(percent_positive_best_mpb$percent_positive)/max(shade_prev)), d_shade, size = .1, alpha = 0.1, col = "red")+
+  geom_point(aes(temp, 100*transformed_prev), d, size = 2, alpha = 0.5, colour = "red") + 
   
-  labs(title = "S.mansoni", x = 'Temperature (ºC)',y = "Prevalence in human (%)")+
-  theme(legend.position="bottom", legend.key = element_rect(fill = "white"), panel.background = element_rect(fill = "white", colour = "black"), text = element_text(size = 17),
-        axis.text.x = element_text(color="black", size=17), axis.text.y = element_text(color="black", size=17),  panel.border = element_rect(colour = "black", fill=NA, size=1), 
-        plot.title = element_text(size=14, face="bold.italic", hjust=0.5)) + 
-  # Add mark segment
+  scale_y_continuous(name = expression("Prevalence in humans (%)"), 
+                     sec.axis = sec_axis(~ . / max(100 * d$transformed_prev) * max(d$prev), name = "Temperature (ºC)")) +
+  labs(title = "", x = 'Temperature (ºC)') +
+  theme(legend.position = "bottom", 
+        legend.key = element_rect(fill = "white"), 
+        panel.background = element_rect(fill = "white", colour = "black"), 
+        text = element_text(size = 17),
+        axis.text.x = element_text(color = "black", size = 17), 
+        axis.text.y = element_text(colour = "black", size = 17),
+        #axis.text.y = element_blank(),  # Hide left y-axis numerical values
+        axis.title.y.right  = element_blank(),
+        axis.text.y.right = element_text(color = "black", size = 17),  # Keep secondary y-axis text
+        panel.border = element_rect(colour = "black", fill = NA, size = 1), 
+        plot.title = element_text(size = 14, face = "bold.italic", hjust = 0.5)) +
   annotate("text", x = percent_positive_best_mpb$temperature[which.max(percent_positive_best_mpb$percent_positive)], y = 1, label = '^', colour = "red", size = 5) + 
   annotate("text", x = percent_positive_best_mpb$temperature[which.max(percent_positive_best_mpb$percent_positive)], y = 4,  label = paste(percent_positive_best_mpb$temperature[which.max(percent_positive_best_mpb$percent_positive)],".0", sep = ""), colour = "red", size = 5) +
   # Add horizontal line segment
